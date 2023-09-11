@@ -1,7 +1,3 @@
-Sure! Below is a sample `README.md` for your "Generate Meal Plan" project:
-
----
-
 # Generate Meal Plan 🍽️
 
 Welcome to **Generate Meal Plan** - your go-to tool for creating personalized and nutritious meal plans with ease!
@@ -55,4 +51,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-Feel free to customize this template to better fit the specific details and nuances of your project!

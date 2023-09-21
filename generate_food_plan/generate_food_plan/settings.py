@@ -40,9 +40,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'ai_model_app',
+    'ai_model_app.apps.AiModelAppConfig',
     'corsheaders',
+    'crispy_forms',
+    'crispy_bootstrap5'
+    
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 
 MIDDLEWARE = [
@@ -53,7 +60,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -77,6 +83,7 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'generate_food_plan.wsgi.application'
 
 
@@ -85,8 +92,12 @@ WSGI_APPLICATION = 'generate_food_plan.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'de3n08tc42t9ni',
+        'USER': 'onypxvhxsrojfx',
+        'PASSWORD': '6ebe2f3e8812eb9a4ae27edf68a48c8e99bf86f6c5e2eee829268c4f6e60b6fb',
+        'HOST': 'ec2-44-213-228-107.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
@@ -131,3 +142,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = '/home'
+LOGOUT_REDIRECT_URL = '/login'

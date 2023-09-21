@@ -1,21 +1,26 @@
-from django.shortcuts import render
+from django.shortcuts import  redirect, render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import PlanGenerationSerializer
 import logging
 import os
-from langchain.embeddings import HuggingFaceBgeEmbeddings
-from langchain.document_loaders import DirectoryLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.question_answering import load_qa_chain
 from langchain.chains import RetrievalQA
 from langchain.llms import OpenAI
-from langchain.vectorstores import Chroma
-from langchain.embeddings import OpenAIEmbeddings
 from django.conf import settings
 from .secret_key import APIKEY
 import openai
 import tiktoken
+from rest_framework.decorators import permission_classes
+from django.contrib.auth.models import User
+from rest_framework.permissions import IsAdminUser
+from .utils import *
+from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import redirect, render
+from .forms import RegisterForm
+
 
 openai.api_key = APIKEY
 os.environ["OPENAI_API_KEY"] = APIKEY
@@ -26,43 +31,11 @@ data_path = os.path.join(
 # Create your views here.
 
 
-def load_document():
-    loader = DirectoryLoader(data_path, glob="**/*.csv",
-                             show_progress=True, use_multithreading=True)
-    data = loader.load()
-    text_spliter = RecursiveCharacterTextSplitter(
-        chunk_size=1000, chunk_overlap=0)
-    texts = text_spliter.split_documents(data)
-    return texts
-
-
-def retrieve_answer(texts, query):
-    embeddings = OpenAIEmbeddings()
-    vectordb = Chroma.from_documents(texts, embeddings)
-    
-    #output = qa.run(query)
-    output = []
-    return output
-
-
-def embeddings_model(texts):
-    model_name = 'BAAI/bge-base-en'
-    encode_kwargs = {
-        'normalize_embeddings': True,
-    }
-    model_norm = HuggingFaceBgeEmbeddings(
-        model_name=model_name, model_kwargs={'device': 'cuda'}, encode_kwargs=encode_kwargs)
-    
-    persist_directory = 'db'
-    embedding = model_norm
-    vectordb = Chroma.from_documents(documents=texts, embedding=embedding, persist_directory=persist_directory)
-    retriever = vectordb.as_retriever(search_k={"k":5})
-    return retriever
-    
-
-
+def home(request):
+    return render(request, 'main/home.html')
 
 @api_view(['POST'])
+@permission_classes([IsAdminUser])
 def generate_plan(request):
     logger.info(f"Request: {request.data}")
     input_data = request.data['input_data']
@@ -82,3 +55,33 @@ def generate_plan(request):
     if serializer.is_valid():
         return Response(serializer.data)
     return Response(serializer.errors, status=400)
+
+
+@api_view(['POST'])
+def create_user_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    if not username or not password:
+        return Response({'error': 'Please provide both username and password'}, status=400)
+    
+    # Check if the user already exists
+    if User.objects.filter(username=username).exists():
+        return Response({'error': 'Username already exists'}, status=400)
+
+    User.objects.create_user(username=username, password=password)
+    return Response({'message': 'User created successfully!'}, status=201)
+
+
+def sign_up(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('/home')
+    else:
+        form = RegisterForm()
+
+    return render(request, 'registration/sign_up.html', {"form": form})
+        

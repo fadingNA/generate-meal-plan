@@ -18,21 +18,21 @@ class CustomUserChangeForm(UserChangeForm):
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
+    model = User
+    list_display = ['id', 'role']
+    list_filter = ['role']
     fieldsets = (
-        (None, {'fields': ('username', 'email', 'password', )}),
-        (
-            _('Permissions'),
-            {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions', )}
-        ),
-        (_('Important dates'), {'fields': ('created_at', 'updated_at', )}),
+        (None, {'fields': ('id', 'password', 'role')}),
+        ('Permissions', {'fields': ()}),
     )
-    readonly_fields = ('created_at', 'updated_at', )
     add_fieldsets = (
         (None, {
-            'classes': ('wide', ),
-            'fields': ('username', 'email', 'password1', 'password2', ),
-        }),
+            'classes': ('wide',),
+            'fields': ('id', 'password1', 'password2', 'role')}
+        ),
     )
-    form = CustomUserChangeForm
-    add_form = CustomUserCreationForm
-    list_display = ('username', 'is_staff', 'is_active', )
+    search_fields = ['id']
+    ordering = ['id']
+

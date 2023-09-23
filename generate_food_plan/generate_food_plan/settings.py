@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'ai_model_app.apps.AiModelAppConfig',
     'corsheaders',
     'crispy_forms',
-    'crispy_bootstrap5'
+    'crispy_bootstrap5',
+    
 
 ]
 
@@ -172,7 +173,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'ai_model_app.User'
+#AUTH_USER_MODEL = 'ai_model_app.User'
 
 LOGIN_REDIRECT_URL = '/home'
 LOGOUT_REDIRECT_URL = '/login'
